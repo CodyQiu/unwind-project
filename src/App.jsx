@@ -6,29 +6,42 @@ import Journal from "./components/Journal";
 import Breathing from "./components/Breathing";
 import Checklist from "./components/Checklist";
 
+const views = [
+  { id: "home", label: "Home", icon: "🌙" },
+  { id: "journal", label: "Journal", icon: "✍️" },
+  { id: "breathing", label: "Breathing", icon: "🫧" },
+  { id: "checklist", label: "Checklist", icon: "✨" },
+];
+
 function App() {
   const [activeView, setActiveView] = useState("home");
-  let page;
-  if (activeView === "home") {
-    page = <Home />;
-  } else if (activeView === "journal") {
-    page = <Journal />;
-  } else if (activeView === "breathing") {
-    page = <Breathing />;
-  } else if (activeView === "checklist") {
-    page = <Checklist />;
-  }
+
+  const pages = {
+    home: <Home />,
+    journal: <Journal />,
+    breathing: <Breathing />,
+    checklist: <Checklist />,
+  };
 
   return (
-    <div>
+    <div className="app-shell">
+      <div className="ambient ambient-one" />
+      <div className="ambient ambient-two" />
       <Header />
-      <nav>
-        <button onClick={() => setActiveView("home")}>Home</button>
-        <button onClick={() => setActiveView("journal")}>Journal</button>
-        <button onClick={() => setActiveView("breathing")}>Breathing</button>
-        <button onClick={() => setActiveView("checklist")}>Checklist</button>
+      <nav className="nav-tabs" aria-label="Primary navigation">
+        {views.map((view) => (
+          <button
+            key={view.id}
+            className={`nav-tab ${activeView === view.id ? "active" : ""}`}
+            onClick={() => setActiveView(view.id)}
+            type="button"
+          >
+            <span aria-hidden="true">{view.icon}</span>
+            {view.label}
+          </button>
+        ))}
       </nav>
-      {page}
+      <main className="content-panel">{pages[activeView]}</main>
     </div>
   );
 }

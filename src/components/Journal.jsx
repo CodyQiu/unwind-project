@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 
 function Journal() {
-  const [numEntries, setNumEntries] = useState(0);
   const [message, setMessage] = useState("");
-  const [entries, setEntries] = useState([]);
+  const [entryText, setEntryText] = useState("");
+  const [entries, setEntries] = useState(() => {
+    return JSON.parse(localStorage.getItem("journalEntries")) || [];
+  });
   const [expandedEntry, setExpandedEntry] = useState(null);
-
-  useEffect(() => {
-    const savedEntries =
-      JSON.parse(localStorage.getItem("journalEntries")) || [];
-    setEntries(savedEntries);
-  }, []);
 
   const handleSave = () => {
     const newEntry = {
       id: Date.now(),
-      content: document.querySelector("textarea").value,
+      content: entryText.trim(),
     };
     if (newEntry.content.length === 0) {
       setMessage(
@@ -26,13 +22,10 @@ function Journal() {
       }, 2500);
       return;
     }
-    setEntries([...entries, newEntry]);
-    localStorage.setItem(
-      "journalEntries",
-      JSON.stringify([...entries, newEntry]),
-    );
-    setNumEntries(numEntries + 1);
-    document.querySelector("textarea").value = "";
+    const updatedEntries = [...entries, newEntry];
+    setEntries(updatedEntries);
+    localStorage.setItem("journalEntries", JSON.stringify(updatedEntries));
+    setEntryText("");
     setMessage("Entry saved successfully!");
     setTimeout(() => {
       setMessage("");
@@ -42,7 +35,6 @@ function Journal() {
     const updatedEntries = entries.filter((entry) => entry.id !== id);
     setEntries(updatedEntries);
     localStorage.setItem("journalEntries", JSON.stringify(updatedEntries));
-    setNumEntries(numEntries - 1);
     setMessage("Entry deleted successfully!");
     setTimeout(() => {
       setMessage("");
@@ -56,14 +48,13 @@ function Journal() {
     }
   };
   return (
-    <div>
+    <section className="page-section journal-page">
       <h2>Sleep Journal</h2>
       <p>What's on your mind today?</p>
       <textarea
-        name=""
-        id=""
+        value={entryText}
+        onChange={(event) => setEntryText(event.target.value)}
         placeholder="Dump all your thoughts and feelings here..."
-        style={{ width: "95%", height: "150px" }}
       ></textarea>
       <button onClick={handleSave}>Save Entry</button>
       {message && message[0] === "I" && (
@@ -115,14 +106,14 @@ function Journal() {
                     className="expand-btn"
                     onClick={() => handleExpand(entry.id)}
                   >
-                    {isExpanded ? "Show Lesss" : "Read More"}
+                    {isExpanded ? "Show Less" : "Read More"}
                   </button>
                 )}
               </div>
             );
           })}
       </div>
-    </div>
+    </section>
   );
 }
 

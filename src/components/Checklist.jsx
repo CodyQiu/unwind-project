@@ -1,33 +1,20 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function Checklist() {
-  const [completed, setCompleted] = useState(0);
-  const [tasks, setTasks] = useState([
-    {
-      id: Date.now(),
-      text: "Turn off all devices",
-      completed: false,
-      isCustom: false,
-    },
-    {
-      id: Date.now() + 1,
-      text: "Brush your teeth",
-      completed: false,
-      isCustom: false,
-    },
-  ]);
+  const defaultTasks = [
+    { id: "devices", text: "Turn off all devices", completed: false, isCustom: false },
+    { id: "teeth", text: "Brush your teeth", completed: false, isCustom: false },
+  ];
+  const [tasks, setTasks] = useState(() => {
+    return JSON.parse(localStorage.getItem("checklistTasks")) || defaultTasks;
+  });
+  const completed = tasks.filter((task) => task.completed).length;
+
   useEffect(() => {
-    const savedTasks = JSON.parse(localStorage.getItem("checklistTasks"));
-    if (savedTasks) {
-      setTasks(savedTasks);
-      setCompleted(savedTasks.filter((task) => task.completed).length);
-    }
-  }, []);
+    localStorage.setItem("checklistTasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const handleTask = (id) => {
-    const index = tasks.findIndex((task) => task.id === id);
-    if (tasks[index].completed) setCompleted(completed - 1);
-    else setCompleted(completed + 1);
     setTasks(
       tasks.map((task) => {
         if (task.id === id) {
@@ -48,28 +35,17 @@ function Checklist() {
     if (newTask) {
       setTasks([
         ...tasks,
-        { id: Date.now(), text: newTask, completed: false, isCustom: true },
+        { id: crypto.randomUUID(), text: newTask, completed: false, isCustom: true },
       ]);
-      localStorage.setItem(
-        "checklistTasks",
-        JSON.stringify([
-          ...tasks,
-          { id: Date.now(), text: newTask, completed: false, isCustom: true },
-        ]),
-      );
     }
   };
 
   const handleDelete = (id) => {
-    const index = tasks.findIndex((task) => task.id === id);
-    if (tasks[index].completed) setCompleted(completed - 1);
-    const newTasks = tasks.filter((task) => task.id !== id);
-    setTasks(newTasks);
-    localStorage.setItem("checklistTasks", JSON.stringify(newTasks));
+    setTasks(tasks.filter((task) => task.id !== id));
   };
 
   return (
-    <div>
+    <section className="page-section checklist-page">
       <h2>Sleep Checklist</h2>
       <p>
         Make sure you've done all the things you need to do before you sleep!
@@ -87,10 +63,10 @@ function Checklist() {
                 type="checkbox"
                 checked={task.completed}
                 onChange={() => handleTask(task.id)}
-                id={Date.now()}
+                id={`task-${task.id}`}
                 name={task.text}
               />
-              <label htmlFor={task.text}>{task.text}</label>
+              <label htmlFor={`task-${task.id}`}>{task.text}</label>
               <button
                 className="delete-button"
                 onClick={() => handleDelete(task.id)}
@@ -105,7 +81,7 @@ function Checklist() {
         Completed: {completed}/{tasks.length}
       </h3>
       <button onClick={() => handleAdd()}>Add Task</button>
-    </div>
+    </section>
   );
 }
 
