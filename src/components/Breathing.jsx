@@ -46,10 +46,8 @@ function Breathing() {
   };
 
   return (
-    <div>
-      <br />
-      <br />
-      <h2> Breathing Exercises</h2>
+    <section className="page-section breathing-page">
+      <h2>Breathing Exercises</h2>
       <p>
         Practice deep breathing techniques to relax and improve sleep quality.{" "}
         <br />
@@ -59,7 +57,7 @@ function Breathing() {
       </p>
       <br />
       <br />
-      <div style={{ display: "flex", justifyContent: "center", gap: "10px" }}>
+      <div className="controls">
         <select
           name="rounds"
           id="rounds"
@@ -71,22 +69,13 @@ function Breathing() {
           <option value="15">15 rounds</option>
         </select>
         <br />
-        <button
-          onClick={() => setRunning(true)}
-          style={{ backgroundColor: "lightgreen", border: "solid 3px green" }}
-        >
+        <button className="start-button" onClick={() => setRunning(true)}>
           Start
         </button>
-        <button
-          onClick={() => setRunning(false)}
-          style={{ backgroundColor: "lightcoral", border: "solid 3px red" }}
-        >
+        <button className="stop-button" onClick={() => setRunning(false)}>
           Stop
         </button>
-        <button
-          onClick={resetButton}
-          style={{ backgroundColor: "lightgray", border: "solid 3px gray" }}
-        >
+        <button className="reset-button" onClick={resetButton}>
           Reset
         </button>
       </div>
@@ -94,11 +83,8 @@ function Breathing() {
       <div className="breathing-container">
         <div className={`breathing-circle ${running ? phase : ""}`}>
           <span>
-            <div
-              className="breathing-info"
-              style={{ textAlign: "center", marginTop: "20px" }}
-            >
-              <h3 style={{ textAlign: "center" }}>
+            <div className="breathing-info">
+              <h3>
                 {phase.charAt(0).toUpperCase() + phase.slice(1)}
               </h3>
               <p>
@@ -111,7 +97,7 @@ function Breathing() {
           </span>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
